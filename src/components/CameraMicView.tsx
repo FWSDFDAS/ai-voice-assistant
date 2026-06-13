@@ -1,13 +1,19 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-export default function CameraMicView() {
+interface CameraMicViewProps {
+    videoRef?: React.RefObject<HTMLVideoElement | null>;
+}
+
+export default function CameraMicView({ videoRef: externalVideoRef }: CameraMicViewProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [deviceError, setDeviceError] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [streamInfo, setStreamInfo] = useState<string>('');
-    const videoRef = useRef<HTMLVideoElement>(null);
+    // 使用外部传入的 ref 或创建内部 ref
+    const internalVideoRef = useRef<HTMLVideoElement>(null);
+    const videoRef = externalVideoRef || internalVideoRef;
     const streamRef = useRef<MediaStream | null>(null);
 
     // 使用 effect 处理视频流绑定（避免在回调中操作）
