@@ -13,59 +13,45 @@ export default function App() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-            {/* 摄像头预览区域 */}
-            <CameraMicView videoRef={videoRef} />
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 lg:p-6">
+            {/* 标题 */}
+            <h1 className="text-xl lg:text-2xl font-bold text-center bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4 lg:mb-6">
+                多模态 AI 助手
+            </h1>
 
-            {/* 下方区域：语音输入 + AI 对话 */}
-            <div className="max-w-2xl mx-auto px-4 pb-12">
-                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 mt-8 space-y-8">
-                    {/* 标题 */}
-                    <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                        多模态 AI 助手
-                    </h2>
+            {/* 主布局：摄像头 | 控制面板 */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4 lg:gap-6">
+                {/* 左侧：摄像头（固定宽度，不占满整行） */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/20 h-fit">
+                    <CameraMicView videoRef={videoRef} />
+                </div>
 
-                    {/* 语音输入组件 */}
-                    <div>
+                {/* 右侧：语音输入 + AI 对话（上下排列） */}
+                <div className="flex flex-col gap-4 lg:gap-6 min-h-0">
+                    {/* 语音输入（紧凑） */}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-5 shadow-xl border border-white/20">
+                        <h3 className="text-sm font-semibold text-cyan-300 mb-3 flex items-center gap-1.5">
+                            🎤 语音输入
+                        </h3>
                         <VoiceInput onTranscript={handleTranscript} />
-                        {/* 语音识别结果同步到聊天输入框的提示 */}
                         {chatInput && (
                             <p className="mt-2 text-gray-500 text-xs text-center">
-                                已识别文字已填入下方输入框，可直接编辑后发送
+                                已识别文字已填入下方输入框 →
                             </p>
                         )}
                     </div>
 
-                    {/* 分隔线 */}
-                    <div className="border-t border-white/10" />
-
-                    {/* AI 对话区域 */}
-                    <MultimodalChat
-                        videoRef={videoRef}
-                        inputText={chatInput}
-                        onInputChange={setChatInput}
-                    />
-
-                    {/* 使用说明 */}
-                    <div className="bg-black/20 rounded-xl p-5 border border-white/5">
-                        <h4 className="text-gray-400 font-medium mb-3 text-sm flex items-center gap-1.5">
-                            📖 使用指南
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-gray-500">
-                            <div>
-                                <span className="text-cyan-400">🎤 语音：</span>按住说话，松开自动识别
-                            </div>
-                            <div>
-                                <span className="text-blue-400">📸 看图：</span>
-                                说"你看/这是什么"自动附带画面
-                            </div>
-                            <div>
-                                <span className="text-green-400">⌨️ 文字：</span>
-                                直接在输入框打字或编辑识别结果
-                            </div>
-                            <div>
-                                <span className="text-purple-400">🔊 朗读：</span>AI 回复会自动朗读（可点击 🔇 停止）
-                            </div>
+                    {/* AI 对话（占据剩余空间） */}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-5 shadow-xl border border-white/20 flex-1 min-h-[400px] flex flex-col">
+                        <h3 className="text-sm font-semibold text-blue-300 mb-3 flex items-center gap-1.5">
+                            🤖 AI 对话
+                        </h3>
+                        <div className="flex-1 min-h-0">
+                            <MultimodalChat
+                                videoRef={videoRef}
+                                inputText={chatInput}
+                                onInputChange={setChatInput}
+                            />
                         </div>
                     </div>
                 </div>
