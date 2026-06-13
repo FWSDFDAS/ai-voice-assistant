@@ -44,6 +44,7 @@ export default function VoiceInput({ onTranscript, lang = 'zh-CN' }: VoiceInputP
 
     const recognitionRef = useRef<SpeechRecognition | null>(null);
     const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isListeningRef = useRef(false); // 用 ref 追踪实时状态，避免闭包过时
 
     // 初始化 SpeechRecognition
     useEffect(() => {
@@ -101,10 +102,12 @@ export default function VoiceInput({ onTranscript, lang = 'zh-CN' }: VoiceInputP
             }
 
             setIsListening(false);
+            isListeningRef.current = false;
         };
 
         recognition.onend = () => {
             setIsListening(false);
+            isListeningRef.current = false;
             setInterimText('');
         };
 
@@ -117,30 +120,35 @@ export default function VoiceInput({ onTranscript, lang = 'zh-CN' }: VoiceInputP
 
     // 开始识别
     const startRecognition = useCallback(() => {
-        if (!recognitionRef.current || isListening) return;
+        if (!recognitionRef.current || isListeningRef.current) return; // 用 ref 判断，避免闭包过时
 
         setError(null);
         try {
             recognitionRef.current.start();
+            isListeningRef.current = true;
             setIsListening(true);
         } catch (err) {
             console.error('启动语音识别失败:', err);
+            isListeningRef.current = false;
+            setIsListening(false);
+            isListeningRef.current = false;
             setError('启动失败，请重试');
         }
-    }, [isListening]);
+    }, []);
 
     // 停止识别
     const stopRecognition = useCallback(() => {
-        if (!recognitionRef.current || !isListening) return;
+        if (!recognitionRef.current || !isListeningRef.current) return;
 
         try {
             recognitionRef.current.stop();
         } catch (err) {
             console.error('停止语音识别失败:', err);
         }
+        isListeningRef.current = false;
         setIsListening(false);
         setInterimText('');
-    }, [isListening]);
+    }, []);
 
     // 按下按钮
     const handlePointerDown = useCallback(
